@@ -1,0 +1,105 @@
+---
+title: 'Activity: Street or Road'
+output:
+  html_document:
+    toc: yes
+    df_print: paged
+  html_notebook:
+    toc: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+### Load 
+```{r message = FALSE, warning = FALSE}
+library(dcData)
+library(mosaic)
+library(knitr)
+library(tidyverse)
+```
+
+### Read in Data
+```{r}
+# 15000 street addresses of registered voters in Wake County, North Carolina
+Addresses <- read.csv("https://mdbeckman.github.io/dcSupplement/data/street-addresses.csv", header = T)
+
+# 900,000 street addresses of Medicare Service Providers
+download.file(url="https://mdbeckman.github.io/dcSupplement/data/CMS_ProvidersSimple.rds", destfile = "CMS_ProvidersSimple.rds")
+AddressesMPS <- readRDS("CMS_ProvidersSimple.rds")
+```
+
+### combine two datasets
+```{r}
+# filter AddressesMPS with only address
+AddressesMPS <- AddressesMPS %>%
+  select(address)
+
+# row bind two files
+Combine <- rbind(Addresses, AddressesMPS)
+```
+
+
+# Step 1
+For address, I think it will start with some numbers, then with characters (name of street). After a space, tere are the related words we are looking for(streets, laes, avenues, etc). 
+
+# step 2
+regular expression
+```{r}
+# digits + space + alphabetic character(street name) + space + alphabetic character(road-related words)
+pattern <- "^\\d+\\s+[A-z]+\\s+[A-z]+"
+```
+
+# step 3
+```{r}
+# filter to retain the cases that match the expression
+Matches <- Combine %>%
+  filter(grepl(pattern,address))
+```
+
+# step 4
+```{r}
+# filter to retain the cases that do not match the expression
+Dont <- Combine %>%
+  filter(!grepl(pattern,address))
+```
+
+# Step 5
+```{r}
+# examine both to check shortcomings
+head(Matches)
+```
+
+```{r}
+head(Dont)
+```
+
+# Step 6 
+Improved pattern was upadated in step 1
+
+# Step 7
+repeated step 1 ad 6
+
+# Step 8
+```{r}
+extraction <- "^\\d+\\s+[A-z]+\\s+([A-z]+)"
+street <- Matches %>%
+  tidyr::extract(address, into = "road", regex = extraction)
+```
+
+# Table to check popularity
+```{r}
+popularity <- street %>% 
+  group_by(road) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  top_n(17)
+```
+# plots
+```{r}
+library(ggplot2)
+popularity %>%
+  ggplot(aes(x=reorder(road,-count),y=count)) +
+  geom_bar(stat ='identity') 
+  
+```
+
