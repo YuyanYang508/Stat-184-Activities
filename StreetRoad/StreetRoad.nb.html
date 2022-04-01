@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Yuyan Yang" />
 
 
 <title>Activity: Street or Road</title>
@@ -210,43 +211,31 @@ pre code {
 
 
 <h1 class="title toc-ignore">Activity: Street or Road</h1>
+<h4 class="author">Yuyan Yang</h4>
+<h4 class="date">4/1/2022</h4>
 
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#load">Load</a></li>
-<li><a href="#read-in-data">Read in Data</a></li>
-<li><a href="#combine-two-datasets">combine two datasets</a></li>
-<li><a href="#step-1">Step 1</a></li>
-<li><a href="#step-2">step 2</a></li>
-<li><a href="#step-3">step 3</a></li>
-<li><a href="#step-4">step 4</a></li>
-<li><a href="#step-5">Step 5</a></li>
-<li><a href="#step-6">Step 6</a></li>
-<li><a href="#step-7">Step 7</a></li>
-<li><a href="#step-8">Step 8</a></li>
-<li><a href="#table-to-check-popularity">Table to check popularity</a></li>
-<li><a href="#plots">plots</a></li>
-</ul>
-</div>
 
 <!-- rnb-text-begin -->
-<div id="load" class="section level3">
-<h3>Load</h3>
+<div id="part-1-preprocessing" class="section level1">
+<h1>Part 1: Preprocessing</h1>
+<div id="loading-libraries" class="section level3">
+<h3>Loading libraries</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkY0RhdGEpXG5saWJyYXJ5KG1vc2FpYylcbmxpYnJhcnkoa25pdHIpXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkY0RhdGEpXG5saWJyYXJ5KG1vc2FpYylcbmxpYnJhcnkoa25pdHIpXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmxpYnJhcnkoZ2dwbG90MilcbmBgYCJ9 -->
 <pre class="r"><code>library(dcData)
 library(mosaic)
 library(knitr)
-library(tidyverse)</code></pre>
+library(tidyverse)
+library(ggplot2)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="read-in-data" class="section level3">
-<h3>Read in Data</h3>
+<div id="reading-in-data" class="section level3">
+<h3>Reading in Data</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxNTAwMCBzdHJlZXQgYWRkcmVzc2VzIG9mIHJlZ2lzdGVyZWQgdm90ZXJzIGluIFdha2UgQ291bnR5LCBOb3J0aCBDYXJvbGluYVxuQWRkcmVzc2VzIDwtIHJlYWQuY3N2KFwiaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9kYXRhL3N0cmVldC1hZGRyZXNzZXMuY3N2XCIsIGhlYWRlciA9IFQpXG5cbiMgOTAwLDAwMCBzdHJlZXQgYWRkcmVzc2VzIG9mIE1lZGljYXJlIFNlcnZpY2UgUHJvdmlkZXJzXG5kb3dubG9hZC5maWxlKHVybD1cImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9DTVNfUHJvdmlkZXJzU2ltcGxlLnJkc1wiLCBkZXN0ZmlsZSA9IFwiQ01TX1Byb3ZpZGVyc1NpbXBsZS5yZHNcIilcbkFkZHJlc3Nlc01QUyA8LSByZWFkUkRTKFwiQ01TX1Byb3ZpZGVyc1NpbXBsZS5yZHNcIilcbmBgYCJ9 -->
@@ -261,7 +250,7 @@ AddressesMPS &lt;- readRDS(&quot;CMS_ProvidersSimple.rds&quot;)</code></pre>
 <!-- rnb-text-begin -->
 </div>
 <div id="combine-two-datasets" class="section level3">
-<h3>combine two datasets</h3>
+<h3>Combine two datasets</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaWx0ZXIgQWRkcmVzc2VzTVBTIHdpdGggb25seSBhZGRyZXNzXG5BZGRyZXNzZXNNUFMgPC0gQWRkcmVzc2VzTVBTICU+JVxuICBzZWxlY3QoYWRkcmVzcylcblxuIyByb3cgYmluZCB0d28gZmlsZXNcbkNvbWJpbmUgPC0gcmJpbmQoQWRkcmVzc2VzLCBBZGRyZXNzZXNNUFMpXG5gYGAifQ== -->
@@ -275,115 +264,168 @@ Combine &lt;- rbind(Addresses, AddressesMPS)</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="step-1" class="section level1">
-<h1>Step 1</h1>
-<p>For address, I think it will start with some numbers, then with characters (name of street). After a space, tere are the related words we are looking for(streets, laes, avenues, etc).</p>
 </div>
-<div id="step-2" class="section level1">
-<h1>step 2</h1>
-<p>regular expression</p>
+<div id="part-2-steps-to-find-road-related-words" class="section level1">
+<h1>Part 2: Steps to find road-related words</h1>
+<div id="step-1-describe-a-pattern" class="section level3">
+<h3>Step 1: Describe a pattern</h3>
+<p>For address, I think it will start with some numbers. Then, there will be a space. After space, it will have characters (name of street). After another space, there are the related words we are looking for(streets, lanes, avenues, etc).</p>
+</div>
+<div id="step-2-translate-step-1-to-regular-expression" class="section level3">
+<h3>Step 2: Translate step 1 to regular expression</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkaWdpdHMgKyBzcGFjZSArIGFscGhhYmV0aWMgY2hhcmFjdGVyKHN0cmVldCBuYW1lKSArIHNwYWNlICsgYWxwaGFiZXRpYyBjaGFyYWN0ZXIocm9hZC1yZWxhdGVkIHdvcmRzKVxucGF0dGVybiA8LSBcIl5cXFxcZCtcXFxccytbQS16XStcXFxccytbQS16XStcIlxuYGBgIn0= -->
-<pre class="r"><code># digits + space + alphabetic character(street name) + space + alphabetic character(road-related words)
-pattern &lt;- &quot;^\\d+\\s+[A-z]+\\s+[A-z]+&quot;</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBzdGFydCB3aXRoIDEgb3IgbW9yZSBkaWdpdHMoc3RyZWV0IG51bWJlcikgKyAxIG9yIG1vcmUgc3BhY2UgKyAxIG9yIG1vcmUgYWxwaGFiZXRpYyBjaGFyYWN0ZXIoc3RyZWV0IG5hbWUpICsgMSBvciBtb3JlIHNwYWNlICsgMSBvciBtb3JlIGFscGhhYmV0aWMgY2hhcmFjdGVycyhyb2FkLXJlbGF0ZWQgd29yZHMpXG5wYXR0ZXJuIDwtIFwiXFxcXGQrXFxcXHMrW0Etel0rXFxcXHMrW0Etel0rXCJcbmBgYCJ9 -->
+<pre class="r"><code># start with 1 or more digits(street number) + 1 or more space + 1 or more alphabetic character(street name) + 1 or more space + 1 or more alphabetic characters(road-related words)
+pattern &lt;- &quot;\\d+\\s+[A-z]+\\s+[A-z]+&quot;</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="step-3" class="section level1">
-<h1>step 3</h1>
+<div id="step-3-filter-to-retain-the-cases-that-match-the-expression" class="section level3">
+<h3>Step 3: Filter to retain the cases that match the expression</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaWx0ZXIgdG8gcmV0YWluIHRoZSBjYXNlcyB0aGF0IG1hdGNoIHRoZSBleHByZXNzaW9uXG5NYXRjaGVzIDwtIENvbWJpbmUgJT4lXG4gIGZpbHRlcihncmVwbChwYXR0ZXJuLGFkZHJlc3MpKVxuYGBgIn0= -->
-<pre class="r"><code># filter to retain the cases that match the expression
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaWx0ZXIgdG8gcmV0YWluIHRoZSBjYXNlcyB0aGF0IG1hdGNoIHRoZSByZWd1bGFyIGV4cHJlc3Npb24sIGdldCByaWQgb2Ygbm9uLWFkZHJlc3MgKGxpa2UgUE8gYm94IGV0Yy4pXG5NYXRjaGVzIDwtIENvbWJpbmUgJT4lXG4gIGZpbHRlcihncmVwbChwYXR0ZXJuLGFkZHJlc3MpKVxuYGBgIn0= -->
+<pre class="r"><code># filter to retain the cases that match the regular expression, get rid of non-address (like PO box etc.)
 Matches &lt;- Combine %&gt;%
   filter(grepl(pattern,address))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="step-4" class="section level1">
-<h1>step 4</h1>
+<div id="step-4-retain-the-cases-that-do-not-match-the-expression" class="section level3">
+<h3>Step 4: Retain the cases that do not match the expression</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaWx0ZXIgdG8gcmV0YWluIHRoZSBjYXNlcyB0aGF0IGRvIG5vdCBtYXRjaCB0aGUgZXhwcmVzc2lvblxuRG9udCA8LSBDb21iaW5lICU+JVxuICBmaWx0ZXIoIWdyZXBsKHBhdHRlcm4sYWRkcmVzcykpXG5gYGAifQ== -->
-<pre class="r"><code># filter to retain the cases that do not match the expression
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaWx0ZXIgdG8gcmV0YWluIHRoZSBjYXNlcyB0aGF0IGRvIG5vdCBtYXRjaCB0aGUgZXhwcmVzc2lvbiAobGlrZSBQTyBib3ggZXRjLilcbkRvbnQgPC0gQ29tYmluZSAlPiVcbiAgZmlsdGVyKCFncmVwbChwYXR0ZXJuLGFkZHJlc3MpKVxuYGBgIn0= -->
+<pre class="r"><code># filter to retain the cases that do not match the expression (like PO box etc.)
 Dont &lt;- Combine %&gt;%
   filter(!grepl(pattern,address))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="step-5" class="section level1">
-<h1>Step 5</h1>
+<div id="step-5-examine-step-3-and-step-4-to-identidy-shortcomings" class="section level3">
+<h3>Step 5: Examine step 3 and step 4 to identidy shortcomings</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBleGFtaW5lIGJvdGggdG8gY2hlY2sgc2hvcnRjb21pbmdzXG5oZWFkKE1hdGNoZXMpXG5gYGAifQ== -->
-<pre class="r"><code># examine both to check shortcomings
-head(Matches)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBleGFtaW5lIG1hdGNoZXNcbmhlYWQoTWF0Y2hlcykgXG50YWlsKE1hdGNoZXMpICMgaXNzdWU6IHNvbWUgYWRkcmVzcyBub3Qgc3RhcnRpbmcgd2l0aCBkaWdpdHMgd2VyZSBpbmNsdWRlZFxuYGBgIn0= -->
+<pre class="r"><code># examine matches
+head(Matches) 
+tail(Matches) # issue: some address not starting with digits were included</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChEb250KVxuYGBgIn0= -->
-<pre class="r"><code>head(Dont)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBleGFtaW5lIG5vdCBtYXRjaFxuaGVhZChEb250KSBcbnRhaWwoRG9udCkgIyBpc3N1ZTogc29tZSBhZGRyZXNzIHN0YXJ0aW5nIHdpdGggZGlnaXRzIHdlcmUgaW5jbHVkZWRcbmBgYCJ9 -->
+<pre class="r"><code># examine not match
+head(Dont) 
+tail(Dont) # issue: some address starting with digits were included</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="step-6" class="section level1">
-<h1>Step 6</h1>
-<p>Improved pattern was upadated in step 1</p>
-</div>
-<div id="step-7" class="section level1">
-<h1>Step 7</h1>
-<p>repeated step 1 ad 6</p>
-</div>
-<div id="step-8" class="section level1">
-<h1>Step 8</h1>
+<div id="step-6-improved-or-extend-pattern" class="section level3">
+<h3>Step 6: Improved or extend pattern</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXh0cmFjdGlvbiA8LSBcIl5cXFxcZCtcXFxccytbQS16XStcXFxccysoW0Etel0rKVwiXG5zdHJlZXQgPC0gTWF0Y2hlcyAlPiVcbiAgdGlkeXI6OmV4dHJhY3QoYWRkcmVzcywgaW50byA9IFwicm9hZFwiLCByZWdleCA9IGV4dHJhY3Rpb24pXG5gYGAifQ== -->
-<pre class="r"><code>extraction &lt;- &quot;^\\d+\\s+[A-z]+\\s+([A-z]+)&quot;
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBzdGFydCB3aXRoIDEgb3IgbW9yZSBkaWdpdHMoc3RyZWV0IG51bWJlcikgKyAxIG9yIG1vcmUgc3BhY2UgKyAxIG9yIG1vcmUgYWxwaGFiZXRpYyBjaGFyYWN0ZXIoc3RyZWV0IG5hbWUpICsgMSBvciBtb3JlIHNwYWNlICsgMSBvciBtb3JlIGFscGhhYmV0aWMgY2hhcmFjdGVycyhyb2FkLXJlbGF0ZWQgd29yZHMpXG4jIGFkZGluZyBeIHRvIG1hcmsgdGhlIHN0YXJ0IG9mIGEgc3RyaW5nXG5wYXR0ZXJuIDwtIFwiXlxcXFxkK1xcXFxzK1tBLXpdK1xcXFxzK1tBLXpdK1wiXG5cbiMgZmlsdGVyIHRvIHJldGFpbiB0aGUgY2FzZXMgdGhhdCBtYXRjaCB0aGUgcmVndWxhciBleHByZXNzaW9uLCBnZXQgcmlkIG9mIG5vbi1hZGRyZXNzIChsaWtlIFBPIGJveCBldGMuKVxuTWF0Y2hlcyA8LSBDb21iaW5lICU+JVxuICBmaWx0ZXIoZ3JlcGwocGF0dGVybixhZGRyZXNzKSlcblxuIyBmaWx0ZXIgdG8gcmV0YWluIHRoZSBjYXNlcyB0aGF0IGRvIG5vdCBtYXRjaCB0aGUgZXhwcmVzc2lvbiAobGlrZSBQTyBib3ggZXRjLilcbkRvbnQgPC0gQ29tYmluZSAlPiVcbiAgZmlsdGVyKCFncmVwbChwYXR0ZXJuLGFkZHJlc3MpKVxuYGBgIn0= -->
+<pre class="r"><code># start with 1 or more digits(street number) + 1 or more space + 1 or more alphabetic character(street name) + 1 or more space + 1 or more alphabetic characters(road-related words)
+# adding ^ to mark the start of a string
+pattern &lt;- &quot;^\\d+\\s+[A-z]+\\s+[A-z]+&quot;
+
+# filter to retain the cases that match the regular expression, get rid of non-address (like PO box etc.)
+Matches &lt;- Combine %&gt;%
+  filter(grepl(pattern,address))
+
+# filter to retain the cases that do not match the expression (like PO box etc.)
+Dont &lt;- Combine %&gt;%
+  filter(!grepl(pattern,address))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBleGFtaW5lIG1hdGNoZXNcbmhlYWQoTWF0Y2hlcykgXG50YWlsKE1hdGNoZXMpICMgbm8gb2J2aW91cyBpc3N1ZSB0aGlzIHRpbWVcbmBgYCJ9 -->
+<pre class="r"><code># examine matches
+head(Matches) 
+tail(Matches) # no obvious issue this time</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBleGFtaW5lIG5vdCBtYXRjaFxuaGVhZChEb250KSBcbnRhaWwoRG9udCkgIyBubyBvYnZpb3VzIGlzc3VlIHRoaXMgdGltZVxuYGBgIn0= -->
+<pre class="r"><code># examine not match
+head(Dont) 
+tail(Dont) # no obvious issue this time</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="step-7-repeated-step-1-ad-6" class="section level3">
+<h3>Step 7: Repeated step 1 ad 6</h3>
+<p>Updated once in step 1. Adding ‘^’ to mark the start of a string.</p>
+</div>
+<div id="step-8-put-extaction-parenthesis-around-the-parts-of-regular-expression-that-contain-the-information-we-wat" class="section level3">
+<h3>Step 8: Put extaction parenthesis around the parts of regular expression that contain the information we wat</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhZGRpbmcgcGFyZW50aGVzaXMgYXJvdW5kIGxhc3QgMSBvciBtb3JlIGFscGhhYmV0aWMgY2hhcmFjdGVycyBiZWNhdXNlIHRoZXkgYXJlIHRoZSByb2FkLXJlbGF0ZWQgd29yZHNcbmV4dHJhY3Rpb24gPC0gXCJeXFxcXGQrXFxcXHMrW0Etel0rXFxcXHMrKFtBLXpdKylcIlxuXG4jIHVzaW5nIGV4dHJhY3QoKSBmdW5jdGlvbiB0byBleHRyYWN0IHRoZSByb2FkLXJlbGF0ZWQgd29yZHNcbnN0cmVldCA8LSBNYXRjaGVzICU+JVxuICB0aWR5cjo6ZXh0cmFjdChhZGRyZXNzLCBpbnRvID0gXCJyb2FkXCIsIHJlZ2V4ID0gZXh0cmFjdGlvbilcbmBgYCJ9 -->
+<pre class="r"><code># adding parenthesis around last 1 or more alphabetic characters because they are the road-related words
+extraction &lt;- &quot;^\\d+\\s+[A-z]+\\s+([A-z]+)&quot;
+
+# using extract() function to extract the road-related words
 street &lt;- Matches %&gt;%
   tidyr::extract(address, into = &quot;road&quot;, regex = extraction)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="table-to-check-popularity" class="section level1">
-<h1>Table to check popularity</h1>
+</div>
+<div id="part-3-providing-a-table-in-descending-order-of-popularity-for-the-street-name-identifiers" class="section level1">
+<h1>Part 3: Providing a Table in descending order of popularity for the street name identifiers</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9wdWxhcml0eSA8LSBzdHJlZXQgJT4lIFxuICBncm91cF9ieShyb2FkKSAlPiVcbiAgc3VtbWFyaXNlKGNvdW50ID0gbigpKSAlPiVcbiAgYXJyYW5nZShkZXNjKGNvdW50KSkgJT4lXG4gIHRvcF9uKDE3KVxuYGBgIn0= -->
-<pre class="r"><code>popularity &lt;- street %&gt;% 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjcmVhdGUgYSBkYXRhIGZyYW1lIGNhbGxlZCBwb3B1bGFyaXR5IHRvIHN0b3JlIHRoZSBudW1iZXIgb2YgdGhlIHRpbWVzIGEgc3RyZWV0IG5hbWUgaWRlbnRpZmllcnMgc2hvd3MgdXAgaW4gdGhlIG9yaWdpbmFsIGRhdGEgc2V0cyAoaW4gZGVzY2VuZGluZyBvcmRlcilcbiMgb25seSBzdG9yZSB0aGUgdG9wIDIwIHN0cmVldCBhbWUgaWRldGlmaWVyc1xucG9wdWxhcml0eSA8LSBzdHJlZXQgJT4lIFxuICBncm91cF9ieShyb2FkKSAlPiVcbiAgc3VtbWFyaXNlKGNvdW50ID0gbigpKSAlPiVcbiAgYXJyYW5nZShkZXNjKGNvdW50KSkgJT4lXG4gIHRvcF9uKDIwKVxuXG5wb3B1bGFyaXR5XG5gYGAifQ== -->
+<pre class="r"><code># create a data frame called popularity to store the number of the times a street name identifiers shows up in the original data sets (in descending order)
+# only store the top 20 street ame idetifiers
+popularity &lt;- street %&gt;% 
   group_by(road) %&gt;%
   summarise(count = n()) %&gt;%
   arrange(desc(count)) %&gt;%
-  top_n(17)</code></pre>
+  top_n(20)
+
+popularity</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="plots" class="section level1">
-<h1>plots</h1>
+<div id="part-4-use-ggplot-to-contrusct-a-bar-chart-in-descedning-order-of-popularity" class="section level1">
+<h1>Part 4: Use ggplot to contrusct a bar chart in descedning order of popularity</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShnZ3Bsb3QyKVxucG9wdWxhcml0eSAlPiVcbiAgZ2dwbG90KGFlcyh4PXJlb3JkZXIocm9hZCwtY291bnQpLHk9Y291bnQpKSArXG4gIGdlb21fYmFyKHN0YXQgPSdpZGVudGl0eScpIFxuICBcbmBgYCJ9 -->
-<pre class="r"><code>library(ggplot2)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBiYXIgY2hhcnQgaW4gZGVzY2VuZGluZyBvcmRlciBvZiBwb3B1bGFyaXR5XG5wb3B1bGFyaXR5ICU+JVxuICBnZ3Bsb3QoYWVzKHg9cmVvcmRlcihyb2FkLC1jb3VudCkseT1jb3VudCkpICtcbiAgZ2VvbV9iYXIoc3RhdCA9J2lkZW50aXR5JykgK1xuICBnZ3RpdGxlKCdQbG90IDE6IFBvcHVsYXJpdHkgb2YgU3RyZWV0IE5hbWUgSWRlbnRpZmllcnMgKERlc2NlbmRpbmcpJykgK1xuICB4bGFiKCdTdHJlZXQgTmFtZSBJZGVudGlmaWVycycpICtcbiAgeWxhYignUG9wdWxhcml0eSAoQ291bnQpJylcbmBgYCJ9 -->
+<pre class="r"><code># bar chart in descending order of popularity
 popularity %&gt;%
   ggplot(aes(x=reorder(road,-count),y=count)) +
-  geom_bar(stat =&#39;identity&#39;) 
-  </code></pre>
+  geom_bar(stat =&#39;identity&#39;) +
+  ggtitle(&#39;Plot 1: Popularity of Street Name Identifiers (Descending)&#39;) +
+  xlab(&#39;Street Name Identifiers&#39;) +
+  ylab(&#39;Popularity (Count)&#39;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="part-5-make-at-least-two-posts-to-groups-discussion" class="section level1">
+<h1>Part 5: Make at least two posts to groups discussion</h1>
+<p>Please reference to the group discussion page on canvas.</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogJ0FjdGl2aXR5OiBTdHJlZXQgb3IgUm9hZCcNCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6IHllcw0KICAgIGRmX3ByaW50OiBwYWdlZA0KICBodG1sX25vdGVib29rOg0KICAgIHRvYzogeWVzDQplZGl0b3Jfb3B0aW9uczoNCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQ0KLS0tDQoNCiMjIyBMb2FkIA0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQpsaWJyYXJ5KGRjRGF0YSkNCmxpYnJhcnkobW9zYWljKQ0KbGlicmFyeShrbml0cikNCmxpYnJhcnkodGlkeXZlcnNlKQ0KYGBgDQoNCiMjIyBSZWFkIGluIERhdGENCmBgYHtyfQ0KIyAxNTAwMCBzdHJlZXQgYWRkcmVzc2VzIG9mIHJlZ2lzdGVyZWQgdm90ZXJzIGluIFdha2UgQ291bnR5LCBOb3J0aCBDYXJvbGluYQ0KQWRkcmVzc2VzIDwtIHJlYWQuY3N2KCJodHRwczovL21kYmVja21hbi5naXRodWIuaW8vZGNTdXBwbGVtZW50L2RhdGEvc3RyZWV0LWFkZHJlc3Nlcy5jc3YiLCBoZWFkZXIgPSBUKQ0KDQojIDkwMCwwMDAgc3RyZWV0IGFkZHJlc3NlcyBvZiBNZWRpY2FyZSBTZXJ2aWNlIFByb3ZpZGVycw0KZG93bmxvYWQuZmlsZSh1cmw9Imh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9DTVNfUHJvdmlkZXJzU2ltcGxlLnJkcyIsIGRlc3RmaWxlID0gIkNNU19Qcm92aWRlcnNTaW1wbGUucmRzIikNCkFkZHJlc3Nlc01QUyA8LSByZWFkUkRTKCJDTVNfUHJvdmlkZXJzU2ltcGxlLnJkcyIpDQpgYGANCg0KIyMjIGNvbWJpbmUgdHdvIGRhdGFzZXRzDQpgYGB7cn0NCiMgZmlsdGVyIEFkZHJlc3Nlc01QUyB3aXRoIG9ubHkgYWRkcmVzcw0KQWRkcmVzc2VzTVBTIDwtIEFkZHJlc3Nlc01QUyAlPiUNCiAgc2VsZWN0KGFkZHJlc3MpDQoNCiMgcm93IGJpbmQgdHdvIGZpbGVzDQpDb21iaW5lIDwtIHJiaW5kKEFkZHJlc3NlcywgQWRkcmVzc2VzTVBTKQ0KYGBgDQoNCg0KIyBTdGVwIDENCkZvciBhZGRyZXNzLCBJIHRoaW5rIGl0IHdpbGwgc3RhcnQgd2l0aCBzb21lIG51bWJlcnMsIHRoZW4gd2l0aCBjaGFyYWN0ZXJzIChuYW1lIG9mIHN0cmVldCkuIEFmdGVyIGEgc3BhY2UsIHRlcmUgYXJlIHRoZSByZWxhdGVkIHdvcmRzIHdlIGFyZSBsb29raW5nIGZvcihzdHJlZXRzLCBsYWVzLCBhdmVudWVzLCBldGMpLiANCg0KIyBzdGVwIDINCnJlZ3VsYXIgZXhwcmVzc2lvbg0KYGBge3J9DQojIGRpZ2l0cyArIHNwYWNlICsgYWxwaGFiZXRpYyBjaGFyYWN0ZXIoc3RyZWV0IG5hbWUpICsgc3BhY2UgKyBhbHBoYWJldGljIGNoYXJhY3Rlcihyb2FkLXJlbGF0ZWQgd29yZHMpDQpwYXR0ZXJuIDwtICJeXFxkK1xccytbQS16XStcXHMrW0Etel0rIg0KYGBgDQoNCiMgc3RlcCAzDQpgYGB7cn0NCiMgZmlsdGVyIHRvIHJldGFpbiB0aGUgY2FzZXMgdGhhdCBtYXRjaCB0aGUgZXhwcmVzc2lvbg0KTWF0Y2hlcyA8LSBDb21iaW5lICU+JQ0KICBmaWx0ZXIoZ3JlcGwocGF0dGVybixhZGRyZXNzKSkNCmBgYA0KDQojIHN0ZXAgNA0KYGBge3J9DQojIGZpbHRlciB0byByZXRhaW4gdGhlIGNhc2VzIHRoYXQgZG8gbm90IG1hdGNoIHRoZSBleHByZXNzaW9uDQpEb250IDwtIENvbWJpbmUgJT4lDQogIGZpbHRlcighZ3JlcGwocGF0dGVybixhZGRyZXNzKSkNCmBgYA0KDQojIFN0ZXAgNQ0KYGBge3J9DQojIGV4YW1pbmUgYm90aCB0byBjaGVjayBzaG9ydGNvbWluZ3MNCmhlYWQoTWF0Y2hlcykNCmBgYA0KDQpgYGB7cn0NCmhlYWQoRG9udCkNCmBgYA0KDQojIFN0ZXAgNiANCkltcHJvdmVkIHBhdHRlcm4gd2FzIHVwYWRhdGVkIGluIHN0ZXAgMQ0KDQojIFN0ZXAgNw0KcmVwZWF0ZWQgc3RlcCAxIGFkIDYNCg0KIyBTdGVwIDgNCmBgYHtyfQ0KZXh0cmFjdGlvbiA8LSAiXlxcZCtcXHMrW0Etel0rXFxzKyhbQS16XSspIg0Kc3RyZWV0IDwtIE1hdGNoZXMgJT4lDQogIHRpZHlyOjpleHRyYWN0KGFkZHJlc3MsIGludG8gPSAicm9hZCIsIHJlZ2V4ID0gZXh0cmFjdGlvbikNCmBgYA0KDQojIFRhYmxlIHRvIGNoZWNrIHBvcHVsYXJpdHkNCmBgYHtyfQ0KcG9wdWxhcml0eSA8LSBzdHJlZXQgJT4lIA0KICBncm91cF9ieShyb2FkKSAlPiUNCiAgc3VtbWFyaXNlKGNvdW50ID0gbigpKSAlPiUNCiAgYXJyYW5nZShkZXNjKGNvdW50KSkgJT4lDQogIHRvcF9uKDE3KQ0KYGBgDQojIHBsb3RzDQpgYGB7cn0NCmxpYnJhcnkoZ2dwbG90MikNCnBvcHVsYXJpdHkgJT4lDQogIGdncGxvdChhZXMoeD1yZW9yZGVyKHJvYWQsLWNvdW50KSx5PWNvdW50KSkgKw0KICBnZW9tX2JhcihzdGF0ID0naWRlbnRpdHknKSANCiAgDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogJ0FjdGl2aXR5OiBTdHJlZXQgb3IgUm9hZCcNCmF1dGhvcjogJ1l1eWFuIFlhbmcnDQpkYXRlOiAnNC8xLzIwMjInDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIFBhcnQgMTogUHJlcHJvY2Vzc2luZw0KDQojIyMgTG9hZGluZyBsaWJyYXJpZXMNCg0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQpsaWJyYXJ5KGRjRGF0YSkNCmxpYnJhcnkobW9zYWljKQ0KbGlicmFyeShrbml0cikNCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeShnZ3Bsb3QyKQ0KYGBgDQoNCiMjIyBSZWFkaW5nIGluIERhdGENCg0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIDE1MDAwIHN0cmVldCBhZGRyZXNzZXMgb2YgcmVnaXN0ZXJlZCB2b3RlcnMgaW4gV2FrZSBDb3VudHksIE5vcnRoIENhcm9saW5hDQpBZGRyZXNzZXMgPC0gcmVhZC5jc3YoImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9zdHJlZXQtYWRkcmVzc2VzLmNzdiIsIGhlYWRlciA9IFQpDQoNCiMgOTAwLDAwMCBzdHJlZXQgYWRkcmVzc2VzIG9mIE1lZGljYXJlIFNlcnZpY2UgUHJvdmlkZXJzDQpkb3dubG9hZC5maWxlKHVybD0iaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9kYXRhL0NNU19Qcm92aWRlcnNTaW1wbGUucmRzIiwgZGVzdGZpbGUgPSAiQ01TX1Byb3ZpZGVyc1NpbXBsZS5yZHMiKQ0KQWRkcmVzc2VzTVBTIDwtIHJlYWRSRFMoIkNNU19Qcm92aWRlcnNTaW1wbGUucmRzIikNCmBgYA0KDQojIyMgQ29tYmluZSB0d28gZGF0YXNldHMNCg0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIGZpbHRlciBBZGRyZXNzZXNNUFMgd2l0aCBvbmx5IGFkZHJlc3MNCkFkZHJlc3Nlc01QUyA8LSBBZGRyZXNzZXNNUFMgJT4lDQogIHNlbGVjdChhZGRyZXNzKQ0KDQojIHJvdyBiaW5kIHR3byBmaWxlcw0KQ29tYmluZSA8LSByYmluZChBZGRyZXNzZXMsIEFkZHJlc3Nlc01QUykNCmBgYA0KDQojIFBhcnQgMjogU3RlcHMgdG8gZmluZCByb2FkLXJlbGF0ZWQgd29yZHMNCg0KIyMjIFN0ZXAgMTogRGVzY3JpYmUgYSBwYXR0ZXJuDQoNCkZvciBhZGRyZXNzLCBJIHRoaW5rIGl0IHdpbGwgc3RhcnQgd2l0aCBzb21lIG51bWJlcnMuIFRoZW4sIHRoZXJlIHdpbGwgYmUgYSBzcGFjZS4gQWZ0ZXIgc3BhY2UsIGl0IHdpbGwgaGF2ZSBjaGFyYWN0ZXJzIChuYW1lIG9mIHN0cmVldCkuIEFmdGVyIGFub3RoZXIgc3BhY2UsIHRoZXJlIGFyZSB0aGUgcmVsYXRlZCB3b3JkcyB3ZSBhcmUgbG9va2luZyBmb3Ioc3RyZWV0cywgbGFuZXMsIGF2ZW51ZXMsIGV0YykuIA0KDQojIyMgU3RlcCAyOiBUcmFuc2xhdGUgc3RlcCAxIHRvIHJlZ3VsYXIgZXhwcmVzc2lvbg0KDQpgYGB7ciBtZXNzYWdlID0gRkFMU0UsIHdhcm5pbmcgPSBGQUxTRX0NCiMgc3RhcnQgd2l0aCAxIG9yIG1vcmUgZGlnaXRzKHN0cmVldCBudW1iZXIpICsgMSBvciBtb3JlIHNwYWNlICsgMSBvciBtb3JlIGFscGhhYmV0aWMgY2hhcmFjdGVyKHN0cmVldCBuYW1lKSArIDEgb3IgbW9yZSBzcGFjZSArIDEgb3IgbW9yZSBhbHBoYWJldGljIGNoYXJhY3RlcnMocm9hZC1yZWxhdGVkIHdvcmRzKQ0KcGF0dGVybiA8LSAiXFxkK1xccytbQS16XStcXHMrW0Etel0rIg0KYGBgDQoNCiMjIyBTdGVwIDM6IEZpbHRlciB0byByZXRhaW4gdGhlIGNhc2VzIHRoYXQgbWF0Y2ggdGhlIGV4cHJlc3Npb24NCg0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIGZpbHRlciB0byByZXRhaW4gdGhlIGNhc2VzIHRoYXQgbWF0Y2ggdGhlIHJlZ3VsYXIgZXhwcmVzc2lvbiwgZ2V0IHJpZCBvZiBub24tYWRkcmVzcyAobGlrZSBQTyBib3ggZXRjLikNCk1hdGNoZXMgPC0gQ29tYmluZSAlPiUNCiAgZmlsdGVyKGdyZXBsKHBhdHRlcm4sYWRkcmVzcykpDQpgYGANCg0KIyMjIFN0ZXAgNDogUmV0YWluIHRoZSBjYXNlcyB0aGF0IGRvIG5vdCBtYXRjaCB0aGUgZXhwcmVzc2lvbg0KDQpgYGB7ciBtZXNzYWdlID0gRkFMU0UsIHdhcm5pbmcgPSBGQUxTRX0NCiMgZmlsdGVyIHRvIHJldGFpbiB0aGUgY2FzZXMgdGhhdCBkbyBub3QgbWF0Y2ggdGhlIGV4cHJlc3Npb24gKGxpa2UgUE8gYm94IGV0Yy4pDQpEb250IDwtIENvbWJpbmUgJT4lDQogIGZpbHRlcighZ3JlcGwocGF0dGVybixhZGRyZXNzKSkNCmBgYA0KDQojIyMgU3RlcCA1OiBFeGFtaW5lIHN0ZXAgMyBhbmQgc3RlcCA0IHRvIGlkZW50aWR5IHNob3J0Y29taW5ncw0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIGV4YW1pbmUgbWF0Y2hlcw0KaGVhZChNYXRjaGVzKSANCnRhaWwoTWF0Y2hlcykgIyBpc3N1ZTogc29tZSBhZGRyZXNzIG5vdCBzdGFydGluZyB3aXRoIGRpZ2l0cyB3ZXJlIGluY2x1ZGVkDQpgYGANCg0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIGV4YW1pbmUgbm90IG1hdGNoDQpoZWFkKERvbnQpIA0KdGFpbChEb250KSAjIGlzc3VlOiBzb21lIGFkZHJlc3Mgc3RhcnRpbmcgd2l0aCBkaWdpdHMgd2VyZSBpbmNsdWRlZA0KYGBgDQoNCiMjIyBTdGVwIDY6IEltcHJvdmVkIG9yIGV4dGVuZCBwYXR0ZXJuDQoNCmBgYHtyfQ0KIyBzdGFydCB3aXRoIDEgb3IgbW9yZSBkaWdpdHMoc3RyZWV0IG51bWJlcikgKyAxIG9yIG1vcmUgc3BhY2UgKyAxIG9yIG1vcmUgYWxwaGFiZXRpYyBjaGFyYWN0ZXIoc3RyZWV0IG5hbWUpICsgMSBvciBtb3JlIHNwYWNlICsgMSBvciBtb3JlIGFscGhhYmV0aWMgY2hhcmFjdGVycyhyb2FkLXJlbGF0ZWQgd29yZHMpDQojIGFkZGluZyBeIHRvIG1hcmsgdGhlIHN0YXJ0IG9mIGEgc3RyaW5nDQpwYXR0ZXJuIDwtICJeXFxkK1xccytbQS16XStcXHMrW0Etel0rIg0KDQojIGZpbHRlciB0byByZXRhaW4gdGhlIGNhc2VzIHRoYXQgbWF0Y2ggdGhlIHJlZ3VsYXIgZXhwcmVzc2lvbiwgZ2V0IHJpZCBvZiBub24tYWRkcmVzcyAobGlrZSBQTyBib3ggZXRjLikNCk1hdGNoZXMgPC0gQ29tYmluZSAlPiUNCiAgZmlsdGVyKGdyZXBsKHBhdHRlcm4sYWRkcmVzcykpDQoNCiMgZmlsdGVyIHRvIHJldGFpbiB0aGUgY2FzZXMgdGhhdCBkbyBub3QgbWF0Y2ggdGhlIGV4cHJlc3Npb24gKGxpa2UgUE8gYm94IGV0Yy4pDQpEb250IDwtIENvbWJpbmUgJT4lDQogIGZpbHRlcighZ3JlcGwocGF0dGVybixhZGRyZXNzKSkNCmBgYA0KDQpgYGB7cn0NCiMgZXhhbWluZSBtYXRjaGVzDQpoZWFkKE1hdGNoZXMpIA0KdGFpbChNYXRjaGVzKSAjIG5vIG9idmlvdXMgaXNzdWUgdGhpcyB0aW1lDQpgYGANCg0KYGBge3J9DQojIGV4YW1pbmUgbm90IG1hdGNoDQpoZWFkKERvbnQpIA0KdGFpbChEb250KSAjIG5vIG9idmlvdXMgaXNzdWUgdGhpcyB0aW1lDQpgYGANCg0KIyMjIFN0ZXAgNzogUmVwZWF0ZWQgc3RlcCAxIGFkIDYNCg0KVXBkYXRlZCBvbmNlIGluIHN0ZXAgMS4gQWRkaW5nICdeJyB0byBtYXJrIHRoZSBzdGFydCBvZiBhIHN0cmluZy4NCg0KIyMjIFN0ZXAgODogUHV0IGV4dGFjdGlvbiBwYXJlbnRoZXNpcyBhcm91bmQgdGhlIHBhcnRzIG9mIHJlZ3VsYXIgZXhwcmVzc2lvbiB0aGF0IGNvbnRhaW4gdGhlIGluZm9ybWF0aW9uIHdlIHdhdA0KYGBge3IgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0V9DQojIGFkZGluZyBwYXJlbnRoZXNpcyBhcm91bmQgbGFzdCAxIG9yIG1vcmUgYWxwaGFiZXRpYyBjaGFyYWN0ZXJzIGJlY2F1c2UgdGhleSBhcmUgdGhlIHJvYWQtcmVsYXRlZCB3b3Jkcw0KZXh0cmFjdGlvbiA8LSAiXlxcZCtcXHMrW0Etel0rXFxzKyhbQS16XSspIg0KDQojIHVzaW5nIGV4dHJhY3QoKSBmdW5jdGlvbiB0byBleHRyYWN0IHRoZSByb2FkLXJlbGF0ZWQgd29yZHMNCnN0cmVldCA8LSBNYXRjaGVzICU+JQ0KICB0aWR5cjo6ZXh0cmFjdChhZGRyZXNzLCBpbnRvID0gInJvYWQiLCByZWdleCA9IGV4dHJhY3Rpb24pDQpgYGANCg0KIyBQYXJ0IDM6IFByb3ZpZGluZyBhIFRhYmxlIGluIGRlc2NlbmRpbmcgb3JkZXIgb2YgcG9wdWxhcml0eSBmb3IgdGhlIHN0cmVldCBuYW1lIGlkZW50aWZpZXJzDQoNCmBgYHtyIG1lc3NhZ2UgPSBGQUxTRSwgd2FybmluZyA9IEZBTFNFfQ0KIyBjcmVhdGUgYSBkYXRhIGZyYW1lIGNhbGxlZCBwb3B1bGFyaXR5IHRvIHN0b3JlIHRoZSBudW1iZXIgb2YgdGhlIHRpbWVzIGEgc3RyZWV0IG5hbWUgaWRlbnRpZmllcnMgc2hvd3MgdXAgaW4gdGhlIG9yaWdpbmFsIGRhdGEgc2V0cyAoaW4gZGVzY2VuZGluZyBvcmRlcikNCiMgb25seSBzdG9yZSB0aGUgdG9wIDIwIHN0cmVldCBhbWUgaWRldGlmaWVycw0KcG9wdWxhcml0eSA8LSBzdHJlZXQgJT4lIA0KICBncm91cF9ieShyb2FkKSAlPiUNCiAgc3VtbWFyaXNlKGNvdW50ID0gbigpKSAlPiUNCiAgYXJyYW5nZShkZXNjKGNvdW50KSkgJT4lDQogIHRvcF9uKDIwKQ0KDQpwb3B1bGFyaXR5DQpgYGANCg0KIyBQYXJ0IDQ6IFVzZSBnZ3Bsb3QgdG8gY29udHJ1c2N0IGEgYmFyIGNoYXJ0IGluIGRlc2NlZG5pbmcgb3JkZXIgb2YgcG9wdWxhcml0eQ0KDQpgYGB7ciBtZXNzYWdlID0gRkFMU0UsIHdhcm5pbmcgPSBGQUxTRX0NCiMgYmFyIGNoYXJ0IGluIGRlc2NlbmRpbmcgb3JkZXIgb2YgcG9wdWxhcml0eQ0KcG9wdWxhcml0eSAlPiUNCiAgZ2dwbG90KGFlcyh4PXJlb3JkZXIocm9hZCwtY291bnQpLHk9Y291bnQpKSArDQogIGdlb21fYmFyKHN0YXQgPSdpZGVudGl0eScpICsNCiAgZ2d0aXRsZSgnUGxvdCAxOiBQb3B1bGFyaXR5IG9mIFN0cmVldCBOYW1lIElkZW50aWZpZXJzIChEZXNjZW5kaW5nKScpICsNCiAgeGxhYignU3RyZWV0IE5hbWUgSWRlbnRpZmllcnMnKSArDQogIHlsYWIoJ1BvcHVsYXJpdHkgKENvdW50KScpDQpgYGANCg0KIyBQYXJ0IDU6IE1ha2UgYXQgbGVhc3QgdHdvIHBvc3RzIHRvIGdyb3VwcyBkaXNjdXNzaW9uDQoNClBsZWFzZSByZWZlcmVuY2UgdG8gdGhlIGdyb3VwIGRpc2N1c3Npb24gcGFnZSBvbiBjYW52YXMuDQo=</div>
 
 
 
