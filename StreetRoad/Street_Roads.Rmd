@@ -1,0 +1,272 @@
+---
+title: "Street Roads"
+author: "Yuyan Yang"
+date: "4/1/2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Part 1: Solved Example (PO Box):
+
+### Load Packages
+```{r message = FALSE, warning= FALSE}
+library(dcData)
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+```
+
+### Load Data
+```{r message = FALSE, warning= FALSE}
+# Data Resources - North Carolina
+# 15000 street addresses of registered voters in Wake County, North Carolina
+Addresses <- read.csv("https://mdbeckman.github.io/dcSupplement/data/street-addresses.csv", header = T)
+
+# 900,000 street addresses of Medicare Service Providers
+download.file(url="https://mdbeckman.github.io/dcSupplement/data/CMS_ProvidersSimple.rds", destfile = "CMS_ProvidersSimple.rds")
+AddressesMPS <- readRDS("CMS_ProvidersSimple.rds") # local copy
+```
+
+```{r message = FALSE, warning = FALSE}
+# sample a few dozen cases
+Sample <- Addresses %>%
+  sample_n(size = 50)
+```
+
+### Step 1 & 2 & 3: Describe a Regex and filter the cases
+```{r message = FALSE, warning = FALSE}
+# 1. The PO Box cases tend to have a substring "PO"
+# 2. the regular expression for "PO" is simply `"PO"`
+# 3. Find some cases that match:
+Matches <- 
+  Sample %>%
+  filter(grepl("PO", address))
+```
+
+### Step 4: Retain the cases not match the expression
+```{r message = FALSE, warning = FALSE}
+# 4. Find cases that don't match
+Dont <- 
+  Sample %>%
+  filter( ! grepl("PO", address))
+```
+
+### Step 5: Examine results
+```{r message = FALSE, warning = FALSE}
+# 5. Find cases of `Matches` that we don't want to match, 
+# and find cases of `Dont` that we should have matched.
+# Inspect Matches
+head(Matches)
+
+# Inspect Dont
+head(Dont)
+```
+
+### Step 6 & 7: Improve or extend the pattern
+```{r message = FALSE, warning = FALSE}
+# 6. Maybe "BOX" might be a better pattern, 
+# so we'll try that instead.
+# Pattern to locate
+pattern <- "BOX\\s+(\\d+)"
+
+# Inspect Matches
+Matches <- 
+  Sample %>%
+  filter(grepl(pattern, address))
+
+Matches
+
+# Inspect Dont
+Dont <- 
+  Sample %>%
+  filter( ! grepl(pattern, address))
+
+Dont
+```
+### Step 8: Extract info we are looking for
+```{r message = FALSE, warning = FALSE}
+# We'll now use `tidyr::extract()` to pull 
+# the part of the pattern identified by the extraction parenthesis.
+BoxNumbers <- 
+  Sample %>%
+  filter(grepl(pattern, address)) %>%
+  tidyr::extract(address, into = "boxnum", regex = pattern)
+
+head(BoxNumbers, 10)
+```
+
+# Part 2: Back to the Streets
+
+## Your turn 1:  explain each line of code in English (commented code)
+```{r message = FALSE, warning = FALSE}
+# Store a pattern of a street name identifier, ST or RD or ROAD
+pattern <- "(ST|RD|ROAD)"  
+
+# Output the results to a data frame named LeftOvers
+LeftOvers <- 
+  
+  # USE addresses as the input data frame
+  Addresses %>%
+  
+  # excluded address with pattern ('ST' or 'RD' or 'ROAD')
+  filter( ! grepl(pattern, address), 
+          
+          # excluded address end with (1 space + 'APT' or 'UNIT' + 1 space + 1 or more digits)
+          ! grepl("\\sAPT|UNIT\\s[\\d]+$", address), 
+          
+          # excluded address with pattern ('BOX' or 'BX')
+          ! grepl("BOX|BX", address)) 
+
+# Inspect the result to find out which street name identifiers need to be further include in the pattern
+head(LeftOvers, 10)
+```
+
+## Your Turn 2: expand to match several more pattern
+
+ReadMe:
+
+* What I will do is first combine both data sets (Addresses and AddressesMPS) 
+* Then I will go through the workflow (Step 1 to Step 8) 
+* I will define a simple (not very accurate) regular expression (break down components of addresses) to find out the ranking of popular street identifiers (their counts is not accurate due the inaccurate regex but it can provide a great big picture of popularity)
+* Then I will use the top (at least 12) street identifiers to match in the original dataset to find out accurate counts (I will manually inspect to exclude the terms that is not street identifiers)
+* Then, I will generate table and plots
+
+### Combine two datasets
+
+```{r message = FALSE, warning = FALSE}
+# filter AddressesMPS with only address
+AddressesMPS <- AddressesMPS %>%
+  select(address)
+
+# row bind two files
+Combine <- rbind(Addresses, AddressesMPS)
+```
+
+### Step 1: Describe a pattern
+
+For address, I think it will start with some numbers. Then, there will be a space. After space, it will have characters (name of street). After another space, there are the related words we are looking for(streets, lanes, avenues, etc). 
+
+### Step 2: Translate step 1 to regular expression
+
+```{r message = FALSE, warning = FALSE}
+# start with 1 or more digits(street number) + 1 or more space + 1 or more alphabetic character(street name) + 1 or more space + 1 or more alphabetic characters(road-related words)
+pattern <- "^\\d+\\s+[A-z]+\\s+[A-z]+"
+```
+
+### Step 3: Filter to retain the cases that match the expression
+
+```{r message = FALSE, warning = FALSE}
+# filter to retain the cases that match the regular expression, get rid of non-address (like PO box etc.)
+Match <- Combine %>%
+  filter(grepl(pattern,address))
+```
+
+### Step 4: Retain the cases that do not match the expression
+
+```{r message = FALSE, warning = FALSE}
+# filter to retain the cases that do not match the expression (like PO box etc.)
+NotMatch <- Combine %>%
+  filter(!grepl(pattern,address))
+```
+
+### Step 5: Examine step 3 and step 4 to identidy shortcomings
+```{r message = FALSE, warning = FALSE}
+# examine matches
+head(Match) 
+tail(Match) # no obvious issue
+```
+
+```{r message = FALSE, warning = FALSE}
+# examine not match
+head(NotMatch) 
+tail(NotMatch) # issue: some address with non-traditional format were excluded
+```
+
+### Step 6: Improved or extend pattern
+
+```{r message = FALSE, warning = FALSE}
+# start with 1 or more digits(street number) + 1 or more space + 1 or more alphabetic character(street name) + 1 or more space + 1 or more alphabetic characters(road-related words)
+# change 1 or more alphabetic character(street name) to '\\w' to include street name which has numbers (like 7th ave, etc.)
+pattern <- "^\\d+\\s+\\w+\\s+[A-z]+"
+
+# filter to retain the cases that match the regular expression, get rid of non-address (like PO box etc.)
+Match <- Combine %>%
+  filter(grepl(pattern,address))
+
+# filter to retain the cases that do not match the expression (like PO box etc.)
+NotMatch <- Combine %>%
+  filter(!grepl(pattern,address))
+```
+
+```{r message = FALSE, warning = FALSE}
+# examine matches
+head(Match) 
+tail(Match) # no obvious issue 
+```
+
+```{r message = FALSE, warning = FALSE}
+# examine not match
+head(NotMatch) 
+tail(NotMatch) # some weird format address were still excluded, but it's hard to extend this time because it will make matches data inaccurate if we further expand regular expression
+```
+
+### Step 7: Repeated step 1 ad 6
+
+Repeat process in step 6.
+
+### Step 8: Put extaction parenthesis around the parts of regular expression that contain the information we wat
+```{r message = FALSE, warning = FALSE}
+# adding parenthesis around last 1 or more alphabetic characters because they are the road-related words
+extraction <- "^\\d+\\s+\\w+\\s+([A-z]+)"
+
+# using extract() function to extract the road-related words
+street <- Match %>%
+  tidyr::extract(address, into = "road", regex = extraction)
+```
+
+### Find out the top 20 most popular street identifiers
+```{r message = FALSE, warning = FALSE}
+# rank the street identifiers in descending orders by count
+# only show the top 20 street name identifiers
+street %>% 
+  group_by(road) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  top_n(20)
+```
+
+In the top 20, it is obvious that 'MAIN', 'CENTER', 'PARK', 'Medical' are not street identifiers. So, I will exclude them and include everything else in top 20 in the final pattern.
+
+### Providing a Table in descending order of popularity for the street name identifiers
+
+```{r message = FALSE, warning = FALSE}
+# define our final pattern, which includes 16 street identifiers. They has 1 or more space before it. Also, it ends right after identifiers. By including at least 1 space before identifiers, we are making sure the identifiers we extract are actual street identifiers instead of characters of a street name. By end right after identifiers, we exclude address with units or apartments. It's an disadvantage, but it can make sure every identifier i got is an actual road-identifier instead of being parts of a word.
+final_pattern <- "\\s+(ST|AVE|RD|DR|BLVD|STREET|PKWY|ROAD|LN|WAY|HWY|AVENUE|DRIVE|HIGHWAY|PL|CT)$"
+
+# match the final pattern with address and extract road identifiers
+popularity <- 
+  Combine %>%
+  filter(grepl(final_pattern, address)) %>%
+  tidyr::extract(address, into = "identifier", regex = final_pattern)
+
+# turn road identifiers into descending order of popularity 
+popularity <- popularity  %>% 
+  group_by(identifier) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+popularity
+```
+
+### Use ggplot to contrusct a bar chart in descedning order of popularity
+
+```{r message = FALSE, warning = FALSE}
+# bar chart in descending order of popularity
+popularity %>%
+  ggplot(aes(x=reorder(identifier,-count),y=count)) +
+  geom_bar(stat ='identity') +
+  ggtitle('Plot 1: Popularity of Street Name Identifiers (Descending)') +
+  xlab('Street Name Identifiers') +
+  ylab('Popularity (Count)')
+```
+
