@@ -78,7 +78,7 @@ playerDf$Cut <- ifelse(playerDf$Position == 'CUT', "Missed Cut", "Made Cut")
 ```{r}
 # Task 1: Boxplot Shots Gained Total
 playerDf %>%
-  ggplot(aes(y = SGTOT, color = Cut)) +
+  ggplot(aes(y = SGTOT, x = Cut, color = Cut)) +
   geom_boxplot() +
   ggtitle("Boxplot Shots Gained Total") +
   ylab('Shots Gained Total')
@@ -89,10 +89,14 @@ It seems like the Missed Cut group has a smaller median than made cut group in t
 ```{r}
 # Task 2: Boxplot Greens Hit in Regulation
 playerDf %>%
-  ggplot(aes(y = GIR, color = Cut)) +
+  ggplot(aes(y = GIR, x = Cut, color = Cut)) +
   geom_boxplot() +
   ggtitle("Boxplot Greens Hit in Regulation") +
   ylab('Greens in Regulation')
 ```
 
 It seems like, again, missed cut group has a smaller median than made cut group in term of Greens in Regulation. But at least the difference is close this time. 
+
+### link to github
+
+https://github.com/YuyanYang508/Stat-184-Activities/blob/main/RegEx2/Activity_RegularExpression2.Rmd
