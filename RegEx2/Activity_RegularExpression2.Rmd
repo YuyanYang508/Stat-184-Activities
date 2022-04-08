@@ -1,0 +1,98 @@
+---
+title: "Regular Expressions 2"
+author: "Yuyan Yang"
+date: "4/8/2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Load Packages
+```{r message = FALSE, error = FALSE}
+library(tidyverse)
+```
+
+### Read in Data
+```{r message = FALSE, error = FALSE}
+# read in .txt using read.delim()
+RegEx2 <- read.delim('Data_RegEx2.txt', 
+                     fileEncoding = "UTF-8",
+                     header = F,
+                     quote = "")
+
+# transform file to a vector
+RegEx2V <- RegEx2[['V1']]
+
+# transform vector to matrix, then to proper dimension data frame
+playerDf <- as.data.frame(matrix(data = RegEx2V, ncol =16, byrow = TRUE))
+```
+
+### First Clean
+```{r message = FALSE, error = FALSE}
+# task 1: Rename original columns, create Player column first name last name
+
+## name vectors
+oldnames = c('V1','V2','V3','V4','V5','V6','V7','V8','V9','V10','V11','V12',
+             'V13','V14','V15','V16')
+newnames = c('Position', 'Player', 'FinalScore', 'THRU',
+             'TODAY', 'SGPutt', 'SGARG','SGAPP','SGOTT',
+             'SGT2G','SGTOT','DrDist','DrAcc','GIR',
+             'FairProx','Scrambling')
+
+## rename original columns
+playerDf <- playerDf %>%
+  rename_at(vars(oldnames), ~ newnames)
+
+## deal with player's name
+playerDf <- playerDf %>% 
+  extract(Player, c('Last','First'),"(.+)\\s{1}(.+)") %>%
+  unite("Player", First:Last, sep = " ")
+
+# task 2: Remove Position equal to WD (i.e. player withdrew)
+playerDf <- playerDf %>%
+  filter(!Position == 'WD')
+
+# task 3: Convert hyphens to NAs (view data file, right click hyphened cell, click Inspect, copy that hyphen element to get correct size of hyphen to change to NAs)
+playerDf <- playerDf %>%
+  mutate(across(everything(), ~gsub("—",NA,.)))
+
+# task 4: Print head and tail to see if results match images provided
+head(playerDf)
+tail(playerDf)
+```
+
+### Second Clean
+```{r message = FALSE, error = FALSE}
+# task 1: Convert SGTOT and GIR to Numeric while dropping %
+playerDf  <- playerDf %>%
+  mutate(SGTOT = gsub("%","",SGTOT)) %>%
+  mutate(GIR = gsub("%","",GIR)) %>%
+  mutate(SGTOT = as.numeric(SGTOT)) %>%
+  mutate(GIR = as.numeric(GIR))
+
+# task 2: Create new column Cut based on values of Position where CUT is Missed Cut and Made Cut is otherwise
+playerDf$Cut <- ifelse(playerDf$Position == 'CUT', "Missed Cut", "Made Cut")
+```
+
+### Create Boxplots
+```{r}
+# Task 1: Boxplot Shots Gained Total
+playerDf %>%
+  ggplot(aes(y = SGTOT, color = Cut)) +
+  geom_boxplot() +
+  ggtitle("Boxplot Shots Gained Total") +
+  ylab('Shots Gained Total')
+```
+
+It seems like the Missed Cut group has a smaller median than made cut group in term of Shots Gained Total. I will even guess they are significant different based on this box plot.
+
+```{r}
+# Task 2: Boxplot Greens Hit in Regulation
+playerDf %>%
+  ggplot(aes(y = GIR, color = Cut)) +
+  geom_boxplot() +
+  ggtitle("Boxplot Greens Hit in Regulation") +
+  ylab('Greens in Regulation')
+```
+
+It seems like, again, missed cut group has a smaller median than made cut group in term of Greens in Regulation. But at least the difference is close this time. 
