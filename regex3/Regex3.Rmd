@@ -1,8 +1,10 @@
 ---
 title: "Regular Expressions 3"
-author: 'Yuyan Yang'
-date: '4/16/2022'
-output: html_notebook
+author: "Yuyan Yang"
+date: "4/16/2022"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ### Load packages and data
@@ -143,3 +145,6 @@ top2 %>%
 ```
 
 **interpretation**: It looks like the tournaments won is decreasing year by year! And this trend has shown in all three teams. It is a very interesting finding because they are the best teams in Olympics (top 2 Olympic Memberships per year), but there is still a declining trend in term of tournaments won.
+
+### link to GitHub
+https://github.com/YuyanYang508/Stat-184-Activities/blob/main/regex3/Regex3.Rmd
