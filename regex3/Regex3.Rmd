@@ -1,0 +1,145 @@
+---
+title: "Regular Expressions 3"
+author: 'Yuyan Yang'
+date: '4/16/2022'
+output: html_notebook
+---
+
+### Load packages and data
+```{r warning = FALSE, message = FALSE}
+# loading packages
+library(tidyverse)
+
+# loading data
+regex3 <- read.csv("Data_RegEx3.csv", header = T)
+```
+
+### Create New variable year Based on First Four Digits of tourny_id
+```{r warning = FALSE, message = FALSE}
+# use mutate to create variable year
+# and use str_extract() to extract patterns from tourny_id
+# store the result to a new df called regex3_1
+regex3_1 <- regex3 %>%
+  mutate(year = str_extract(tourney_id, pattern = "^\\d{4}"))
+
+# display top 3 and bottom 3 rows
+head(regex3_1, 3)
+tail(regex3_1, 3)
+```
+
+### Separate ‘score’ variable into 5 columns based on ‘score’ results
+```{r warning = FALSE, message = FALSE}
+# use gsub() to delete patterns "\\(\\d+)" like (4), (5) from score
+# use gsub() to delete patterns "RET" from score
+# use separate() to separate scores into 5 sets by space
+regex3_2 <- regex3_1 %>%
+  mutate(newscore = gsub(pattern = "\\(\\d+)", replacement = "", score)) %>%
+  mutate(newscore = gsub(pattern = "RET", replacement = "", newscore)) %>%
+  separate(newscore, c("Set.1","Set.2","Set.3","Set.4","Set.5"), sep = " ")
+
+# display top 3 and bottom 3 rows
+head(regex3_2, 3)
+tail(regex3_2, 3)
+```
+
+### Create new variable ’sets.played’by counting non-NAs in Set.1 through Set.5
+```{r warning = FALSE, message = FALSE}
+# sum all the non-NAs in Set.1 through Set.5 and store in a new variable sets.played
+# un-select Set.1 to Set.5 because they are not in the 'REGEX3_markdown.pdf'
+regex3_3 <- regex3_2 %>%
+  mutate(sets.played = as.numeric(!is.na(Set.1)) + 
+           as.numeric(!is.na(Set.2)) + 
+           as.numeric(!is.na(Set.3)) + 
+           as.numeric(!is.na(Set.4)) + 
+           as.numeric(!is.na(Set.5))) %>%
+  select(!c(Set.1,Set.2,Set.3,Set.4,Set.5))
+
+# display top 3 and bottom 3 rows
+head(regex3_3, 3)
+tail(regex3_3, 3)
+```
+
+### Create Density Plot of Minutes Played by Number of Sets Played
+```{r warning = FALSE, message = FALSE}
+# use minutes as x-axis and sets.played as color and fill
+# change title and labs
+# change position and title of legend
+regex3_3 %>%
+  ggplot(aes(x = minutes, color = factor(sets.played), fill = factor(sets.played))) +
+  geom_density() +
+  ggtitle("Density Plots of Minutes Played Per Number of Sets Played") +
+  xlab('Minutes Played') +
+  ylab('Density') +
+  theme(legend.position="top") +
+  labs(fill="Sets Played",color = "Sets Played")
+```
+
+**interpretation**: It looks like 2 sets played is the most common one and 5 sets played is the least common one. Moreover, the density of 2 sets, 3 sets, 4 sets, and 5 sets follows a declining trend. 
+
+### Create Boxplot of Winner’s Age by Tournament Name
+```{r warning = FALSE, message = FALSE}
+# change Us to US
+regex3_4 <- regex3_3 %>%
+  mutate(tourney_name = gsub("^Us", "US", tourney_name))
+
+# boxplot of tourney name and winner age
+# color by tourney name
+# change labels, title, legend title
+regex3_4 %>%
+  ggplot(aes(x = tourney_name, y = winner_age)) +
+  geom_boxplot(aes(color = tourney_name)) +
+  ggtitle('Boxplot Age of Winner in Grand Slam Events') +
+  xlab('Tournament Name') +
+  ylab('Age of Winner') +
+  labs(color="Tournament Name")
+```
+
+**interpretation**: It looks like that the median of each tournament is the same in term of age of winner and they roughly cover the same interval. 
+
+### Counts of Matches Won by Top 5 IOC Membership per Tournament
+```{r warning = FALSE, message = FALSE}
+# find out who are the top 5 IOC  per tournament
+top5 <- regex3_4 %>%
+  group_by(winner_ioc, tourney_name) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  group_by(tourney_name) %>%
+  arrange(desc(count)) %>%
+  mutate(rank = row_number()) %>%
+  filter(rank <= 5)
+
+# x-axis is winner_ioc and y is its matches won per tournament
+top5 %>%
+  ggplot(aes(x = winner_ioc, y = count)) +
+  geom_point() +
+  facet_grid(tourney_name ~ .) +
+  ylab('Tournaments Won') +
+  xlab('Winners Olympic Membership') +
+  ggtitle('Top 5 Olympic Memberships per Tournament') +
+  theme_bw()
+```
+
+**interpretation**: It looks like some teams are always the top 5 team in each tournament like ESP, FRA, and GER (they appear in all four facet). FRA has great performance in term of Olympic memberships in all four tournament. 
+
+### Counts of Matches Won by Top 2 IOC Membership per Year
+```{r warning = FALSE, message = FALSE}
+# find out who are the top 2 IOC per year
+top2 <- regex3_4 %>%
+  group_by(winner_ioc, year) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  group_by(year) %>%
+  arrange(desc(count)) %>%
+  mutate(rank = row_number()) %>%
+  filter(rank <= 2)
+
+#
+top2 %>%
+  ggplot(aes(x = year, y = count)) +
+  geom_point(aes(color = winner_ioc)) +
+  xlab('Year') +
+  ylab('Tournaments Won') +
+  ggtitle('Top 2 Olympic Memberships per Year') +
+  labs(color = 'Olympic Membership') +
+  theme_bw()
+```
+
+**interpretation**: It looks like the tournaments won is decreasing year by year! And this trend has shown in all three teams. It is a very interesting finding because they are the best teams in Olympics (top 2 Olympic Memberships per year), but there is still a declining trend in term of tournaments won.
